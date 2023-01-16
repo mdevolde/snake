@@ -45,7 +45,7 @@ impl Snake {
                 Direction::Right => Point::new(self.body[0].x - 1, self.body[0].y),
             })
         } else {
-            let last = self.body.last().unwrap();
+            let last = self.body.last().unwrap().clone();
             let before_last = self.body[self.body.len() - 2];
 
             if before_last.x == last.x && before_last.y < last.y {

@@ -70,8 +70,13 @@ pub async fn game_state(socket: WebSocket) {
 
     let game = Arc::new(Mutex::new(Game::new()));
 
-    tokio::spawn(send_state(sender, game.clone()));
-    tokio::spawn(get_keys(receiver, game.clone()));
+    let mut send_task = tokio::spawn(send_state(sender, game.clone()));
+    let mut recv_task = tokio::spawn(get_keys(receiver, game.clone()));
+
+    tokio::select! {
+        _ = (&mut recv_task) => send_task.abort(),
+        _ = (&mut send_task) => recv_task.abort(),
+    };
 }
 
 pub async fn fallback() -> Redirect {
