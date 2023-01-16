@@ -50,7 +50,7 @@
         if (websocket != null) {
             return
         }
-        websocket = new WebSocket("ws://localhost:8000/ws");
+        websocket = new WebSocket(`${location.origin.replace("http", "ws")}/ws`);
 
         websocket.onopen = function() {
             console.log("connection opened");
@@ -76,10 +76,10 @@
     });
 
     $(document).keydown(function(e){
-            if (websocket != null && (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40)) {
-                websocket.send(e.keyCode)
-            }
-        });
+        if (websocket != null && (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40)) {
+            websocket.send(e.keyCode)
+        }
+    });    
 
     const snakeboard = document.getElementById("gameCanvas");
     const snakeboard_ctx = gameCanvas.getContext("2d");
