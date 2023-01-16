@@ -81,10 +81,10 @@
             }
         });    
     
-        const DisplayFactor = 20;
-        canvas.width = 20 * DisplayFactor;
-        canvas.height = 20 * DisplayFactor;
         const snakeboard = document.getElementById("gameCanvas");
+        const DisplayFactor = 20;
+        snakeboard.width = 20 * DisplayFactor;
+        snakeboard.height = 20 * DisplayFactor;
         const snakeboard_ctx = gameCanvas.getContext("2d");
         
         function clearCanvas() {
@@ -127,7 +127,6 @@
         }
     
     </script>
-
 </body>
 
 </html>

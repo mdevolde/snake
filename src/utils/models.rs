@@ -61,8 +61,8 @@ impl Snake {
     }
 
     pub fn move_snake(&mut self) {
-        self.body[0].next_position(None, Some(self.direction));
         let old_body = self.body.clone();
+        self.body[0].next_position(None, Some(self.direction));
         
         for i in 1..self.body.len() {
             let previous_point = Some(old_body[i - 1]);
@@ -81,16 +81,17 @@ pub enum Direction {
 
 impl Direction {
     pub fn new(key: usize, snake: Snake) -> Self {
+        let current = snake.direction;
         let direction;
         match key {
             37 => direction = Self::Left,
             38 => direction = Self::Up,
             39 => direction = Self::Right,
             40 => direction = Self::Down,
-            _ => direction = snake.direction,
+            _ => direction = current,
         }
-        if snake.direction.opposite(direction) && snake.body.len() > 1 {
-            snake.direction
+        if current.opposite(direction) && snake.body.len() > 1 {
+            current
         } else {
             direction
         }
