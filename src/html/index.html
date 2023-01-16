@@ -44,6 +44,7 @@
     canvas.height = 20 * DisplayFactor;
     var game = null;
     var websocket = null;
+    var send_need = true;
 
     join_btn.addEventListener("click", function(e) {
 
@@ -67,6 +68,7 @@
                 websocket.close();
                 websocket = null;
             } else {
+                send_need = true;
                 clearCanvas();
                 drawSnake();
                 drawFood();
@@ -76,8 +78,9 @@
     });
 
     $(document).keydown(function(e){
-        if (websocket != null && (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40)) {
+        if (websocket != null && send_need == true && (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40)) {
             websocket.send(e.keyCode)
+            send_need = false;
         }
     });    
 
