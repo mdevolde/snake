@@ -21,12 +21,10 @@ pub async fn ws_handler(ws: WebSocketUpgrade) -> impl IntoResponse {
 pub async fn game_state(socket: WebSocket) {
     async fn send_state(mut sender: SplitSink<WebSocket, Message>, game: Arc<Mutex<Game>>) {
         loop {
-            let food = game.lock().unwrap().food.clone();
-
             game.lock().unwrap().snake.move_snake();
 
             let actuel_head_position = game.lock().unwrap().snake.body[0].clone();
-
+            let food = game.lock().unwrap().food.clone();
             if actuel_head_position == food {
                 game.lock().unwrap().snake.eat();
                 game.lock().unwrap().score += 1;
@@ -43,7 +41,6 @@ pub async fn game_state(socket: WebSocket) {
             }
 
             let to_send = serde_json::to_string(&game.lock().unwrap().clone()).unwrap();
-
             if sender
                 .send(Message::Text(to_send.to_string()))
                 .await
@@ -67,7 +64,6 @@ pub async fn game_state(socket: WebSocket) {
     }
 
     let (sender, receiver) = socket.split();
-
     let game = Arc::new(Mutex::new(Game::new()));
 
     let mut send_task = tokio::spawn(send_state(sender, game.clone()));
