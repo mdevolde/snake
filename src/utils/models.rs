@@ -28,25 +28,24 @@ pub struct Snake {
 
 impl Snake {
     pub fn new() -> Self {
-        let mut snake = Snake {
-            body: Vec::<Point>::new(),
+        Snake {
+            body: vec![Point::new(10, 10)],
             direction: Direction::Up,
-        };
-        snake.body.push(Point::new(10, 10));
-        snake
+        }
     }
 
     pub fn eat(&mut self) {
-        if self.body.len() == 1 {
+        if self.body.len() < 2 {
+            let current_head = self.body[0];
             self.body.push(match self.direction {
-                Direction::Up => Point::new(self.body[0].x, self.body[0].y + 1),
-                Direction::Down => Point::new(self.body[0].x, self.body[0].y - 1),
-                Direction::Left => Point::new(self.body[0].x + 1, self.body[0].y),
-                Direction::Right => Point::new(self.body[0].x - 1, self.body[0].y),
+                Direction::Up => Point::new(current_head.x, current_head.y + 1),
+                Direction::Down => Point::new(current_head.x, current_head.y - 1),
+                Direction::Left => Point::new(current_head.x + 1, current_head.y),
+                Direction::Right => Point::new(current_head.x - 1, current_head.y),
             })
         } else {
             let before_last = self.body[self.body.len() - 2];
-            let last = self.body.last().unwrap().clone();
+            let last = self.body.last().unwrap().clone(); // safe unwrap because we checked the length before
 
             if before_last.x == last.x && before_last.y < last.y {
                 self.body.push(Point::new(last.x, last.y + 1));
@@ -63,7 +62,7 @@ impl Snake {
     pub fn move_snake(&mut self) {
         let old_body = self.body.clone();
         self.body[0].next_position(None, Some(self.direction));
-        
+
         for i in 1..self.body.len() {
             let previous_point = Some(old_body[i - 1]);
             self.body[i].next_position(previous_point, None);
@@ -80,16 +79,15 @@ pub enum Direction {
 }
 
 impl Direction {
-    pub fn new(key: usize, snake: Snake) -> Self {
+    pub fn new(key: u16, snake: Snake) -> Self {
         let current = snake.direction;
-        let direction;
-        match key {
-            37 => direction = Self::Left,
-            38 => direction = Self::Up,
-            39 => direction = Self::Right,
-            40 => direction = Self::Down,
-            _ => direction = current,
-        }
+        let direction = match key {
+            37 => Self::Left,
+            38 => Self::Up,
+            39 => Self::Right,
+            40 => Self::Down,
+            _ => current,
+        };
         if current.opposite(direction) && snake.body.len() > 1 {
             current
         } else {
@@ -119,26 +117,22 @@ impl Point {
     }
 
     fn next_position(&mut self, previous_point: Option<Point>, direction: Option<Direction>) {
-        let future_direction;
-
-        match previous_point {
+        let future_direction = match previous_point {
             Some(point) => {
                 if point.x < self.x && point.y == self.y {
-                    future_direction = Some(Direction::Left)
+                    Some(Direction::Left)
                 } else if point.x > self.x && point.y == self.y {
-                    future_direction = Some(Direction::Right)
+                    Some(Direction::Right)
                 } else if point.x == self.x && point.y < self.y {
-                    future_direction = Some(Direction::Up)
+                    Some(Direction::Up)
                 } else if point.x == self.x && point.y > self.y {
-                    future_direction = Some(Direction::Down)
+                    Some(Direction::Down)
                 } else {
-                    future_direction = None;
+                    None
                 }
             }
-            None => {
-                future_direction = direction;
-            }
-        }
+            None => direction,
+        };
 
         match future_direction {
             Some(Direction::Up) => self.y -= 1,
@@ -151,25 +145,24 @@ impl Point {
 
     pub fn new_food(snake: Option<Snake>) -> Self {
         let mut rng = rand::thread_rng();
-        let mut new_food;
         match snake {
-            Some(snake) => loop {
-                let x = rng.gen_range(0..20);
-                let y = rng.gen_range(0..20);
-                new_food = Point::new(x, y);
-                if !snake.body.contains(&new_food) {
-                    break;
+            Some(snake) => {
+                let mut new_food;
+                loop {
+                    let x = rng.gen_range(0..20);
+                    let y = rng.gen_range(0..20);
+                    new_food = Point::new(x, y);
+                    if !snake.body.contains(&new_food) {
+                        break;
+                    }
                 }
-            },
+                new_food
+            }
             None => {
                 let x = rng.gen_range(0..20);
                 let y = rng.gen_range(0..20);
-                new_food = Point::new(x, y);
+                Point::new(x, y)
             }
-        }
-        Self {
-            x: new_food.x,
-            y: new_food.y,
         }
     }
 }
