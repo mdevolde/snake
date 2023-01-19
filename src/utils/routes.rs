@@ -9,7 +9,7 @@ use tokio::sync::Mutex;
 use super::models::*;
 
 pub async fn index() -> Html<&'static str> {
-    Html(include_str!("../html/index.html"))
+    Html(include_str!("../../assets/index.html"))
 }
 
 pub async fn ws_handler(ws: WebSocketUpgrade) -> impl IntoResponse {

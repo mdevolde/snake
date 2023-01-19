@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 use axum::{routing::get, Router};
+use axum_extra::routing::SpaRouter;
 use std::net::SocketAddr;
 
 mod utils;
@@ -14,6 +15,7 @@ async fn start_server() -> Result<()> {
     let app = Router::new()
         .route("/", get(index))
         .route("/ws", get(ws_handler))
+        .merge(SpaRouter::new("/assets", "assets").index_file("index.html"))
         .fallback(fallback);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
