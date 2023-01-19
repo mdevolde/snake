@@ -16,6 +16,7 @@ RUN rm src/*
 
 # Actual build
 COPY src/ ./src/
+COPY assets/ ./assets/
 RUN rm ./target/release/deps/snake*
 RUN cargo build --release
 
