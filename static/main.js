@@ -8,9 +8,9 @@ const join_btn = document.querySelector("#join-game");
 var game = null;
 var send_need = false;
 let lastRenderTime = 0;
-const gameSpeed = 100; // in milliseconds
 
 function gameLoop(currentTime) {
+    const gameSpeed = Math.max(50, 200 - (game.score * 10));
     if (currentTime - lastRenderTime < gameSpeed) {
         requestAnimationFrame(gameLoop);
         return;
