@@ -1,27 +1,44 @@
 # syntax=docker/dockerfile:1
 
-##
-## Build
-##
-FROM rust:1.60 as build
+# Step 1 : Create an image for building the Rust project
+FROM rust:1.80 as builder
 
-RUN cargo new snake
-WORKDIR /snake/
+# Install the build dependencies
+RUN apt-get update && apt-get install -y build-essential
 
-# Cache dependencies
-COPY Cargo.lock ./
-COPY Cargo.toml ./
-RUN cargo build --release
-RUN rm src/*
+# Install wasm-pack
+RUN cargo install wasm-pack
 
-# Actual build
-COPY src/ ./src/
-COPY assets/ ./assets/
-RUN rm ./target/release/deps/snake*
-RUN cargo build --release
+# Create a new directory for the project
+WORKDIR /usr/src/app
 
-##
-## Deploy
-##
+# Copy the project files
+COPY . .
 
-CMD ["target/release/snake"]
+# Build the project with wasm-pack
+RUN wasm-pack build --release --target web
+
+# Step 2 : Create an image for running the Python server
+FROM python:3.11-slim
+
+# Install python dependencies
+COPY requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Copy the Python file, templates and static files
+COPY ./app.py /app/app.py
+COPY ./templates /app/templates
+COPY ./static /app/static
+
+# Copy the built files from the previous image
+COPY --from=builder /usr/src/app/pkg /app/static/out
+
+# Define the working directory
+WORKDIR /app
+
+# Expose the port 8000
+EXPOSE 8000
+
+# Run the Python server
+CMD ["python", "app.py"]

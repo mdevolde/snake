@@ -1,47 +1,50 @@
-// based upon code from https://www.educative.io/blog/javascript-snake-game-tutorial
+import init, { new_game, move_snake, update_game } from './out/snake.js';
+async function run() {
+    await init();
+}
+run();
 
 const join_btn = document.querySelector("#join-game");
 var game = null;
-var websocket = null;
-var send_need = true;
+var send_need = false;
+let lastRenderTime = 0;
+const gameSpeed = 100; // in milliseconds
+
+function gameLoop(currentTime) {
+    if (currentTime - lastRenderTime < gameSpeed) {
+        requestAnimationFrame(gameLoop);
+        return;
+    }
+
+    lastRenderTime = currentTime;
+    if (!game.game_over) {
+        clearCanvas();
+        drawSnake();
+        drawFood();
+        displayScore();
+        game = update_game();
+        setTimeout(() => {
+            requestAnimationFrame(gameLoop);
+        }, gameSpeed);
+    } else {
+        PrintGameOver();
+    }
+}
 
 join_btn.addEventListener("click", function(e) {
-
-    if (websocket != null) {
-        return
-    }
-    websocket = new WebSocket(`${location.origin.replace("http", "ws")}/ws`);
-
-    websocket.onopen = function() {
-        console.log("connection opened");
-    }
-
-    websocket.onclose = function() {
-        console.log("connection closed");
-    }
-
-    websocket.onmessage = function(e) {
-        game = JSON.parse(e.data);
-        if (game.game_over == true) {
-            PrintGameOver();
-            websocket.close();
-            websocket = null;
-        } else {
-            send_need = true;
-            clearCanvas();
-            drawSnake();
-            drawFood();
-            displayScore();
-        }
-    }
+    game = new_game();
+    send_need = true;
+    gameLoop(0);
 });
 
 $(document).keydown(function(e){
-    if (websocket != null && send_need == true && (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40)) {
-        websocket.send(e.keyCode)
-        send_need = false;
+    if (send_need == true && (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40)) {
+        game = move_snake(e.keyCode);
     }
 });    
+
+
+// based upon code from https://www.educative.io/blog/javascript-snake-game-tutorial
 
 const snakeboard = document.getElementById("gameCanvas");
 const DisplayFactor = 20;

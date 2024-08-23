@@ -1,0 +1,12 @@
+h3 {
+    color: #ffffff;
+}
+body {
+    text-align:center;
+    font-family: helvetica;
+    background-color: #3e454c;
+}
+canvas {
+    border: 2px solid rgb(151, 149, 149);
+    background-color: #ffffff;
+}

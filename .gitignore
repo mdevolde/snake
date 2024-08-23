@@ -1,1 +1,5 @@
 /target
+/env
+/static/out/*.ts
+/static/out/*.js
+/static/out/*.wasm
