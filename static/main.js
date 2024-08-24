@@ -9,6 +9,9 @@ async function run() {
     var game_started = false;
     let lastRenderTime = 0;
 
+    var scoreElement = document.getElementById('score');
+    var gameOverElement = document.getElementById('game-over');
+
     const MAP_HEIGHT = get_map_height();
     const MAP_WIDTH = get_map_width();
 
@@ -47,7 +50,7 @@ async function run() {
                 requestAnimationFrame(gameLoop);
             }, gameSpeed);
         } else {
-            PrintGameOver();
+            gameOverElement.classList.remove('hidden');
             game_started = false;
             game = new_game();
         }
@@ -56,6 +59,9 @@ async function run() {
     $(document).keydown(function(e){
         if (game_started == false) {
             game_started = true;
+            if (!gameOverElement.classList.contains('hidden')) {
+                gameOverElement.classList.add('hidden');
+            }
             gameLoop(0);
         } else if (game_started == true && (e.keyCode == UP_KEY || e.keyCode == DOWN_KEY 
             || e.keyCode == LEFT_KEY || e.keyCode == RIGHT_KEY)) {
@@ -64,9 +70,19 @@ async function run() {
     });    
 
     function clearCanvas() {
-        snakeboard_ctx.fillStyle = "white";
+        const rows = snakeboard.height / DisplayFactor;
+        const cols = snakeboard.width / DisplayFactor;
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                if ((row + col) % 2 === 0) {
+                    snakeboard_ctx.fillStyle = '#FEC668'; // Couleur pour les cases claires
+                } else {
+                    snakeboard_ctx.fillStyle = '#FAA63A'; // Couleur pour les cases foncées
+                }
+                snakeboard_ctx.fillRect(col * DisplayFactor, row * DisplayFactor, DisplayFactor, DisplayFactor);
+            }
+        }
         snakeboard_ctx.strokestyle = 'black';
-        snakeboard_ctx.fillRect(0, 0, snakeboard.width, snakeboard.height);
         snakeboard_ctx.strokeRect(0, 0, snakeboard.width, snakeboard.height);
     }
 
@@ -91,16 +107,7 @@ async function run() {
     }
 
     function displayScore() {
-        snakeboard_ctx.fillStyle = "black";
-        snakeboard_ctx.font = "20px Arial";
-        snakeboard_ctx.fillText("Score: " + game.score, 10, 20);
+        scoreElement.textContent = game.score;
     }
-
-    function PrintGameOver() {
-        snakeboard_ctx.fillStyle = "red";
-        snakeboard_ctx.font = "30px Arial";
-        snakeboard_ctx.fillText("Game Over", snakeboard.width / 3, snakeboard.height / 2);
-    }
-
 }
 run();

@@ -32,6 +32,7 @@ impl Game {
 pub struct Snake {
     pub body: Vec<Point>,
     pub direction: Direction,
+    pub previous_direction: Option<Direction>,
 }
 
 impl Snake {
@@ -41,6 +42,7 @@ impl Snake {
                 Point::new((MAP_HEIGHT/2)-1, 5)
                 ],
             direction: Direction::Right,
+            previous_direction: None,
         };
         for _ in 0..3 {
             snake.eat();
@@ -102,7 +104,8 @@ impl Direction {
             DOWN_KEY => Self::Down,
             _ => current,
         };
-        if current.opposite(direction) && snake.body.len() > 1 {
+        if snake.body.len() > 1 && (current.opposite(direction) || 
+        (snake.previous_direction.is_some() && snake.previous_direction.unwrap().opposite(direction))) {
             current
         } else {
             direction

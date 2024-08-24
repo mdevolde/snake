@@ -14,14 +14,27 @@
 </head>
 
 <body>
-    <div class="p-5 text-center bg-dark">
-        <h3 class="mb-3">E-kot / Snake game</h3>
+    <div class="navbar-custom mb-5">
+        <div class="score-button">
+            Score: <span id="score">0</span>
+        </div>
+        <h3 class="navbar-title">E-kot / Snake game</h3>
     </div>
-    <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 200px);">
-        <div class="d-flex justify-content-center align-items-center">
-            <canvas id="gameCanvas"></canvas>
+    <div class="main-content">
+        <div id="game-over" class="game-over-container mb-5 hidden">
+            <h1 class="game-over-text">Game Over</h1>
+        </div>
+        <div class="d-flex justify-content-center align-items-center" >
+            <div class="d-flex justify-content-center align-items-center">
+                <canvas id="gameCanvas" height="0" width="0"></canvas>
+            </div>
         </div>
     </div>
+    <footer class="footer-custom">
+        <div class="footer-content">
+            <p>&copy; 2024 Martin Devolder.</p>
+        </div>
+    </footer>
     <script type="module" src="/static/main.js"></script>
 </body>
 

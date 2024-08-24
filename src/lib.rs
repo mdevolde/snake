@@ -50,7 +50,9 @@ pub fn new_game() -> JsValue {
 pub fn move_snake(direction: u16) -> JsValue {
     let mut game= GAME.lock().unwrap();
 
+    let previous_direction = Some(game.snake.direction.clone());
     game.snake.direction = Direction::new(direction, game.snake.clone());
+    game.snake.previous_direction = previous_direction;
 
     to_value(&*game).unwrap()
 }
@@ -59,6 +61,9 @@ pub fn move_snake(direction: u16) -> JsValue {
 pub fn update_game() -> JsValue {
     let mut game = GAME.lock().unwrap();
     
+    if game.snake.previous_direction.is_some() {
+        game.snake.previous_direction = None;
+    }
     game.snake.move_snake();
     let actuel_head_position = game.snake.body[0].clone();
     let food = game.food.clone();
