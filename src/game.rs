@@ -1,6 +1,14 @@
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
+pub const MAP_WIDTH: i32 = 20; // Has to be more to be at least 15
+pub const MAP_HEIGHT: i32 = 12; // Has to be more to be at least 10
+
+pub const UP_KEY: u16 = 38;
+pub const DOWN_KEY: u16 = 40;
+pub const LEFT_KEY: u16 = 37;
+pub const RIGHT_KEY: u16 = 39;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Game {
     pub snake: Snake,
@@ -28,10 +36,16 @@ pub struct Snake {
 
 impl Snake {
     pub fn new() -> Self {
-        Snake {
-            body: vec![Point::new(10, 10)],
-            direction: Direction::Up,
+        let mut snake = Snake {
+            body: vec![
+                Point::new((MAP_HEIGHT/2)-1, 5)
+                ],
+            direction: Direction::Right,
+        };
+        for _ in 0..3 {
+            snake.eat();
         }
+        snake
     }
 
     pub fn eat(&mut self) {
@@ -82,10 +96,10 @@ impl Direction {
     pub fn new(key: u16, snake: Snake) -> Self {
         let current = snake.direction;
         let direction = match key {
-            37 => Self::Left,
-            38 => Self::Up,
-            39 => Self::Right,
-            40 => Self::Down,
+            LEFT_KEY => Self::Left,
+            UP_KEY => Self::Up,
+            RIGHT_KEY => Self::Right,
+            DOWN_KEY => Self::Down,
             _ => current,
         };
         if current.opposite(direction) && snake.body.len() > 1 {
@@ -149,8 +163,8 @@ impl Point {
             Some(snake) => {
                 let mut new_food;
                 loop {
-                    let x = rng.gen_range(0..20);
-                    let y = rng.gen_range(0..20);
+                    let x = rng.gen_range(0..MAP_WIDTH);
+                    let y = rng.gen_range(0..MAP_HEIGHT);
                     new_food = Point::new(x, y);
                     if !snake.body.contains(&new_food) {
                         break;
@@ -159,8 +173,8 @@ impl Point {
                 new_food
             }
             None => {
-                let x = rng.gen_range(0..20);
-                let y = rng.gen_range(0..20);
+                let x = 15;
+                let y = (MAP_HEIGHT/2)-1;
                 Point::new(x, y)
             }
         }
