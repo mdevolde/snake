@@ -7,6 +7,9 @@ import init, {
 async function run() {
     await init();
 
+    const eatSound = new Audio('/static/sound/eat.wav');
+    const gameOverSound = new Audio('/static/sound/game_over.wav');
+
     var game = new_game();
     var game_started = false;
     let lastRenderTime = 0;
@@ -38,28 +41,34 @@ async function run() {
     }
 
     function gameLoop(currentTime) {
+        if (!game_started) return;
+    
+        const timeElapsed = currentTime - lastRenderTime;
         const gameSpeed = Math.max(50, 200 - (game.score * 10));
-        if (currentTime - lastRenderTime < gameSpeed) {
-            requestAnimationFrame(gameLoop);
-            return;
+    
+        if (timeElapsed > gameSpeed) {
+            lastRenderTime = currentTime;
+            if (!game.game_over) {
+                const previous_score = game.score;
+                game = update_game();
+                if (game.score > previous_score) {
+                    eatSound.currentTime = 0;
+                    eatSound.play();
+                }
+                if (!game.game_over) {drawGameBoard();}
+            } else {
+                gameOverSound.play();
+                gameOverElement.classList.remove('hidden');
+                game_started = false;
+                game = new_game();
+            }
         }
-
-        lastRenderTime = currentTime;
-        if (!game.game_over) {
-            drawGameBoard();
-            game = update_game();
-            setTimeout(() => {
-                requestAnimationFrame(gameLoop);
-            }, gameSpeed);
-        } else {
-            gameOverElement.classList.remove('hidden');
-            game_started = false;
-            game = new_game();
-        }
+    
+        requestAnimationFrame(gameLoop);
     }
 
     $(document).keydown(function(e){
-        if (e.keyCode == UP_KEY || e.keyCode == DOWN_KEY || e.keyCode == LEFT_KEY || e.keyCode == RIGHT_KEY) {
+        if ([UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY].includes(e.keyCode)) {
             if (game_started == true) {
                 game = move_snake(e.keyCode);
             } else {
