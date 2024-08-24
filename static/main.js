@@ -44,7 +44,7 @@ async function run() {
         if (!game_started) return;
     
         const timeElapsed = currentTime - lastRenderTime;
-        const gameSpeed = Math.max(50, 200 - (game.score * 10));
+        const gameSpeed = Math.max(100, 150 - (game.score * 5));
     
         if (timeElapsed > gameSpeed) {
             lastRenderTime = currentTime;
