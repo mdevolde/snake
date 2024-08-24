@@ -10,12 +10,12 @@ async function run() {
     const eatSound = new Audio('/static/sound/eat.wav');
     const gameOverSound = new Audio('/static/sound/game_over.wav');
 
-    var game = new_game();
-    var game_started = false;
+    let game = new_game();
+    let game_started = false;
     let lastRenderTime = 0;
 
-    var scoreElement = document.getElementById('score');
-    var gameOverElement = document.getElementById('game-over');
+    const scoreElement = document.getElementById('score');
+    const gameOverElement = document.getElementById('game-over');
 
     const MAP_HEIGHT = get_map_height();
     const MAP_WIDTH = get_map_width();
@@ -67,7 +67,7 @@ async function run() {
         requestAnimationFrame(gameLoop);
     }
 
-    $(document).keydown(function(e){
+    $(document).keydown((e) => {
         if ([UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY].includes(e.keyCode)) {
             if (game_started == true) {
                 game = move_snake(e.keyCode);
