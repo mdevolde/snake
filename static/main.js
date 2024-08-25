@@ -11,7 +11,7 @@ async function run() {
     const gameOverSound = new Audio('/static/sound/game_over.wav');
 
     let game = new_game();
-    let game_started = false;
+    let gameStarted = false;
     let lastRenderTime = 0;
 
     const scoreElement = document.getElementById('score');
@@ -29,7 +29,7 @@ async function run() {
     const DisplayFactor = 35;
     snakeboard.width = MAP_WIDTH * DisplayFactor;
     snakeboard.height = MAP_HEIGHT * DisplayFactor;
-    const snakeboard_ctx = gameCanvas.getContext("2d");
+    const snakeboardCtx = gameCanvas.getContext("2d");
 
     drawGameBoard();
 
@@ -41,7 +41,7 @@ async function run() {
     }
 
     function gameLoop(currentTime) {
-        if (!game_started) return;
+        if (!gameStarted) return;
     
         const timeElapsed = currentTime - lastRenderTime;
         const gameSpeed = Math.max(100, 150 - (game.score * 5));
@@ -59,7 +59,7 @@ async function run() {
             } else {
                 gameOverSound.play();
                 gameOverElement.classList.remove('hidden');
-                game_started = false;
+                gameStarted = false;
                 game = new_game();
             }
         }
@@ -69,10 +69,10 @@ async function run() {
 
     $(document).keydown((e) => {
         if ([UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY].includes(e.keyCode)) {
-            if (game_started == true) {
+            if (gameStarted == true) {
                 game = move_snake(e.keyCode);
             } else {
-                game_started = true;
+                gameStarted = true;
                 if (!gameOverElement.classList.contains('hidden')) {
                     gameOverElement.classList.add('hidden');
                 }
@@ -87,15 +87,15 @@ async function run() {
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < cols; col++) {
                 if ((row + col) % 2 === 0) {
-                    snakeboard_ctx.fillStyle = '#FEC668'; // Couleur pour les cases claires
+                    snakeboardCtx.fillStyle = '#FEC668'; // Couleur pour les cases claires
                 } else {
-                    snakeboard_ctx.fillStyle = '#FAA63A'; // Couleur pour les cases foncées
+                    snakeboardCtx.fillStyle = '#FAA63A'; // Couleur pour les cases foncées
                 }
-                snakeboard_ctx.fillRect(col * DisplayFactor, row * DisplayFactor, DisplayFactor, DisplayFactor);
+                snakeboardCtx.fillRect(col * DisplayFactor, row * DisplayFactor, DisplayFactor, DisplayFactor);
             }
         }
-        snakeboard_ctx.strokestyle = 'black';
-        snakeboard_ctx.strokeRect(0, 0, snakeboard.width, snakeboard.height);
+        snakeboardCtx.strokestyle = 'black';
+        snakeboardCtx.strokeRect(0, 0, snakeboard.width, snakeboard.height);
     }
 
     function drawSnake() {
@@ -167,7 +167,7 @@ async function run() {
                 }
             }
     
-            snakeboard_ctx.drawImage(
+            snakeboardCtx.drawImage(
                 tileimage,
                 tx * 64, ty * 64, // Coordinates in the sprite
                 64, 64, // Size of the cut
@@ -183,7 +183,7 @@ async function run() {
         const appleX = 0 * 64; // X position of the apple in the sprite
         const appleY = 3 * 64; // Y position of the apple in the sprite
     
-        snakeboard_ctx.drawImage(
+        snakeboardCtx.drawImage(
             tileimage, 
             appleX, appleY, // Coordinates in the sprite
             64, 64, // Size of the cut
