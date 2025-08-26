@@ -161,13 +161,13 @@ impl Point {
     }
 
     pub fn new_food(snake: Option<Snake>) -> Self {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         match snake {
             Some(snake) => {
                 let mut new_food;
                 loop {
-                    let x = rng.gen_range(0..MAP_WIDTH);
-                    let y = rng.gen_range(0..MAP_HEIGHT);
+                    let x = rng.random_range(0..MAP_WIDTH);
+                    let y = rng.random_range(0..MAP_HEIGHT);
                     new_food = Point::new(x, y);
                     if !snake.body.contains(&new_food) {
                         break;
